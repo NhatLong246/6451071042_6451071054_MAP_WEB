@@ -1,4 +1,6 @@
 import 'package:web_vlxd/controllers/brand_controller.dart';
+import 'package:web_vlxd/controllers/brand_controller.dart';
+import 'package:web_vlxd/controllers/product_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -25,6 +27,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthController()..checkLogin()),
         ChangeNotifierProvider(create: (_) => CategoryController()),
+        ChangeNotifierProvider(create: (_) => ProductController()),
         ChangeNotifierProvider(create: (_) => AttributeController()),
         ChangeNotifierProvider(create: (_) => BrandController()),
       ],
