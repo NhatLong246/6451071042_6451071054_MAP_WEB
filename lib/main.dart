@@ -1,3 +1,4 @@
+import 'package:web_vlxd/controllers/brand_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -5,6 +6,9 @@ import 'package:flutter_quill/flutter_quill.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'controllers/auth_controller.dart';
+import 'controllers/category_controller.dart';
+import 'controllers/attribute_controller.dart';
+import 'routes/app_routes.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,6 +24,9 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthController()..checkLogin()),
+        ChangeNotifierProvider(create: (_) => CategoryController()),
+        ChangeNotifierProvider(create: (_) => AttributeController()),
+        ChangeNotifierProvider(create: (_) => BrandController()),
       ],
       child: Builder(
         builder: (context) {
@@ -34,6 +41,8 @@ class MyApp extends StatelessWidget {
               GlobalCupertinoLocalizations.delegate,
             ],
             supportedLocales: const [Locale('en'), Locale('vi')],
+            routerDelegate: AppRouterDelegate(auth),
+            routeInformationParser: AppRouteParser(),
           );
         },
       ),

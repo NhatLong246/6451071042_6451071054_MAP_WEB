@@ -1,3 +1,4 @@
+import 'package:web_vlxd/views/cagetories/category_page.dart';
 import 'package:flutter/material.dart';
 import '../views/auth/login_page.dart';
 import '../views/layout/admin_layout.dart';
@@ -28,6 +29,9 @@ class AppRouterDelegate extends RouterDelegate<String>
     }
     Widget page;
     switch (_currentPath) {
+      case "/categories":
+        page = const CategoriesPage();
+        break;
       default:
         page = const Center(child: Text("Dashboard Page"));
     }
