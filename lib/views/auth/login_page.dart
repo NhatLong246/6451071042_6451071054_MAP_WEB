@@ -66,9 +66,9 @@ class _LoginPageState extends State<LoginPage> {
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
-                        Icons.medical_services_rounded,
+                        Icons.construction_rounded,
                         size: 50,
-                        color: Colors.blue.shade800,
+                        color: Colors.orange.shade800,
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -83,7 +83,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(height: 10),
                     const Text(
-                      "Hệ thống nhận diện tên thuốc",
+                      "Hệ thống quản lý vật liệu xây dựng",
                       style: TextStyle(color: Colors.grey),
                     ),
                     const SizedBox(height: 30),

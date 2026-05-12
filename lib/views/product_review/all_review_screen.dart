@@ -31,7 +31,7 @@ class AllReviewScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Text(
-                                "Customer Reviews",
+                                "Đánh Giá Sản Phẩm",
                                 style: TextStyle(
                                   fontSize: 32,
                                   fontWeight: FontWeight.bold,
@@ -40,7 +40,7 @@ class AllReviewScreen extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                "Manage and moderate your product feedback",
+                                "Quản lý đánh giá sản phẩm từ khách hàng",
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: Colors.grey.shade600,
@@ -93,7 +93,7 @@ class AllReviewScreen extends StatelessWidget {
                                 onChanged: controller.search,
                                 decoration: InputDecoration(
                                   hintText:
-                                      "Search by product, user or content...",
+                                      "Tìm kiếm theo sản phẩm, tên hoặc nội dung...",
                                   prefixIcon: const Icon(
                                     Icons.search,
                                     color: Colors.blue,

@@ -19,6 +19,11 @@ class AttributesPage extends StatelessWidget {
             return StreamBuilder(
               stream: service.getAll(),
               builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(color: Colors.indigo),
+                  );
+                }
                 if (snapshot.hasData) {
                   controller.setData(snapshot.data!);
                 }
@@ -29,7 +34,7 @@ class AttributesPage extends StatelessWidget {
                     children: [
                       // --- HEADER ---
                       const Text(
-                        "Product Attributes",
+                      "Thuộc Tính Vật Liệu",
                         style: TextStyle(
                           fontSize: 26,
                           fontWeight: FontWeight.bold,
@@ -55,7 +60,7 @@ class AttributesPage extends StatelessWidget {
                               child: TextField(
                                 onChanged: controller.search,
                                 decoration: InputDecoration(
-                                  hintText: "Search by name or value...",
+                                  hintText: "Tìm kiếm theo tên hoặc giá trị...",
                                   prefixIcon: const Icon(
                                     Icons.search_rounded,
                                     color: Colors.indigo,
@@ -80,7 +85,7 @@ class AttributesPage extends StatelessWidget {
                               Icons.add_rounded,
                               color: Colors.white,
                             ),
-                            label: const Text("NEW ATTRIBUTE"),
+                            label: const Text("THÊM THUỘC TÍNH"),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.indigoAccent,
                               foregroundColor: Colors.white,
@@ -114,17 +119,49 @@ class AttributesPage extends StatelessWidget {
                           ),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(20),
-                            child: SingleChildScrollView(
-                              child: DataTable(
+                            child: controller.paginatedData.isEmpty
+                                ? SizedBox(
+                                    width: double.infinity,
+                                    height: 200,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(Icons.inbox_rounded,
+                                            size: 48,
+                                            color: Colors.grey.shade300),
+                                        const SizedBox(height: 12),
+                                        Text(
+                                          'Không có thuộc tính nào',
+                                          style: TextStyle(
+                                              color: Colors.grey.shade400,
+                                              fontSize: 15),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                : Scrollbar(
+                                    thumbVisibility: true,
+                                    thickness: 6,
+                                    child: SingleChildScrollView(
+                                      // cuộn dọc
+                                      child: SingleChildScrollView(
+                                        // cuộn ngang
+                                        scrollDirection: Axis.horizontal,
+                                        child: ConstrainedBox(
+                                          constraints: const BoxConstraints(
+                                              minWidth: 900),
+                                          child: DataTable(
                                 headingRowColor: MaterialStateProperty.all(
                                   Colors.indigo.withOpacity(0.05),
                                 ),
                                 dataRowHeight: 75,
                                 horizontalMargin: 24,
+                                columnSpacing: 16,
                                 columns: const [
                                   DataColumn(
                                     label: Text(
-                                      "SEQ",
+                                      "STT",
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         color: Colors.indigo,
@@ -133,7 +170,7 @@ class AttributesPage extends StatelessWidget {
                                   ),
                                   DataColumn(
                                     label: Text(
-                                      "ATTRIBUTE",
+                                      "TÊN THUỘC TÍNH",
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         color: Colors.indigo,
@@ -142,7 +179,7 @@ class AttributesPage extends StatelessWidget {
                                   ),
                                   DataColumn(
                                     label: Text(
-                                      "VALUES",
+                                      "GIÁ TRỊ",
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         color: Colors.indigo,
@@ -151,7 +188,7 @@ class AttributesPage extends StatelessWidget {
                                   ),
                                   DataColumn(
                                     label: Text(
-                                      "STATUS",
+                                      "TRẠNG THÁI",
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         color: Colors.indigo,
@@ -160,7 +197,7 @@ class AttributesPage extends StatelessWidget {
                                   ),
                                   DataColumn(
                                     label: Text(
-                                      "UPDATED",
+                                      "CẬP NHẬT",
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         color: Colors.indigo,
@@ -169,7 +206,7 @@ class AttributesPage extends StatelessWidget {
                                   ),
                                   DataColumn(
                                     label: Text(
-                                      "ACTIONS",
+                                      "THAO TÁC",
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         color: Colors.indigo,
@@ -183,7 +220,6 @@ class AttributesPage extends StatelessWidget {
                                   final item = controller.paginatedData[index];
                                   return DataRow(
                                     onSelectChanged: (_) {},
-                                    // Tạo hiệu ứng hover nhẹ
                                     cells: [
                                       DataCell(
                                         Text(
@@ -191,24 +227,27 @@ class AttributesPage extends StatelessWidget {
                                         ),
                                       ),
                                       DataCell(
-                                        Text(
-                                          item.name,
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.w600,
+                                        SizedBox(
+                                          width: 160,
+                                          child: Text(
+                                            item.name,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 2,
                                           ),
                                         ),
                                       ),
                                       DataCell(
-                                        SingleChildScrollView(
-                                          scrollDirection: Axis.horizontal,
-                                          child: Row(
+                                        SizedBox(
+                                          width: 320,
+                                          child: Wrap(
+                                            spacing: 6,
+                                            runSpacing: 4,
                                             children: item.attributeValues
                                                 .map(
                                                   (v) => Container(
-                                                    margin:
-                                                        const EdgeInsets.only(
-                                                          right: 6,
-                                                        ),
                                                     padding:
                                                         const EdgeInsets.symmetric(
                                                           horizontal: 10,
@@ -292,13 +331,16 @@ class AttributesPage extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 24),
-                      // --- PAGINATION ---
-                      _buildPagination(controller),
-                    ],
+                    ),
                   ),
-                );
-              },
+                ),
+              const SizedBox(height: 24),
+              // --- PAGINATION ---
+              _buildPagination(controller),
+            ],
+          ),
+        );
+      },
             );
           },
         ),
@@ -327,7 +369,7 @@ class AttributesPage extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           Text(
-            isActive ? "Active" : "Disabled",
+            isActive ? "Hoạt động" : "Vô hiệu",
             style: TextStyle(
               color: isActive ? Colors.green[800] : Colors.red[800],
               fontWeight: FontWeight.bold,
@@ -414,16 +456,16 @@ class AttributesPage extends StatelessWidget {
           children: [
             Icon(Icons.warning_amber_rounded, color: Colors.red),
             SizedBox(width: 10),
-            Text("Confirm Delete"),
+            Text('Xác nhận xóa'),
           ],
         ),
         content: const Text(
-          "This attribute will be permanently removed. Continue?",
+          'Thuộc tính này sẽ bị xóa vĩnh viễn. Bạn có chắc chắn không?',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("CANCEL"),
+            child: const Text('HỦY'),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -436,7 +478,7 @@ class AttributesPage extends StatelessWidget {
               await service.delete(id);
               Navigator.pop(context);
             },
-            child: const Text("DELETE", style: TextStyle(color: Colors.white)),
+            child: const Text('XÓA', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),

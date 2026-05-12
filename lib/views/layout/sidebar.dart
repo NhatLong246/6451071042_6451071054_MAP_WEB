@@ -41,15 +41,15 @@ class _SidebarState extends State<Sidebar> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.blueAccent,
+                    color: Colors.orange,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Icon(Icons.bolt, color: Colors.white, size: 24),
+                  child: const Icon(Icons.construction, color: Colors.white, size: 24),
                 ),
                 const SizedBox(width: 12),
                 const Flexible(
                   child: Text(
-                    "SHOE ADMIN",
+                    "VLX ADMIN",
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 20,

@@ -1,5 +1,4 @@
 import 'package:web_vlxd/controllers/brand_controller.dart';
-import 'package:web_vlxd/controllers/brand_controller.dart';
 import 'package:web_vlxd/controllers/product_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -11,10 +10,12 @@ import 'controllers/auth_controller.dart';
 import 'controllers/category_controller.dart';
 import 'controllers/attribute_controller.dart';
 import 'routes/app_routes.dart';
+import 'data/services/firebase_seeder.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await FirebaseSeeder.seedIfEmpty();
   runApp(const MyApp());
 }
 

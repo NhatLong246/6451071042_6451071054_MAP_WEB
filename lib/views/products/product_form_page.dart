@@ -134,7 +134,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const Text(
-                                  "Basic Information",
+                                  "Thông tin cơ bản",
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
@@ -144,16 +144,16 @@ class _ProductFormPageState extends State<ProductFormPage> {
                                 TextFormField(
                                   controller: titleController,
                                   decoration: const InputDecoration(
-                                    labelText: "Product Title",
+                                    labelText: "Tên sản phẩm *",
                                     border: OutlineInputBorder(),
                                   ),
                                   validator: (v) => v == null || v.isEmpty
-                                      ? "Required"
+                                      ? "Vui lòng nhập tên sản phẩm"
                                       : null,
                                 ),
                                 const SizedBox(height: 20),
                                 const Text(
-                                  "Description",
+                                  "Mô tả sản phẩm",
                                   style: TextStyle(fontWeight: FontWeight.bold),
                                 ),
                                 const SizedBox(height: 8),
@@ -180,7 +180,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
                                     config: const QuillEditorConfig(
                                       padding: EdgeInsets.all(10),
                                       placeholder:
-                                          "Enter product description...",
+                                          "Nhập mô tả chi tiết sản phẩm...",
                                     ),
                                   ),
                                 ),
@@ -198,7 +198,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const Text(
-                                  "Product Configuration & Management",
+                                  "Cấu hình & Quản lý kho",
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
@@ -208,7 +208,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
 
                                 /// PRODUCT TYPE
                                 const Text(
-                                  "Product Type",
+                                  "Loại sản phẩm",
                                   style: TextStyle(fontWeight: FontWeight.bold),
                                 ),
                                 Row(
@@ -220,7 +220,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
                                         onChanged: (value) {
                                           setState(() => productType = value!);
                                         },
-                                        title: const Text("Single"),
+                                        title: const Text("Sản phẩm đơn"),
                                       ),
                                     ),
                                     Expanded(
@@ -230,7 +230,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
                                         onChanged: (value) {
                                           setState(() => productType = value!);
                                         },
-                                        title: const Text("Variable"),
+                                        title: const Text("Sản phẩm biến thể"),
                                       ),
                                     ),
                                   ],
@@ -241,28 +241,65 @@ class _ProductFormPageState extends State<ProductFormPage> {
                                 TextFormField(
                                   controller: skuController,
                                   decoration: const InputDecoration(
-                                    labelText: "SKU",
+                                    labelText: "Mã SKU",
+                                    hintText: "VD: XM-PCB40-50KG",
                                     border: OutlineInputBorder(),
+                                    prefixIcon: Icon(Icons.qr_code),
                                   ),
                                 ),
                                 const SizedBox(height: 15),
 
-                                /// STOCK
-                                TextFormField(
-                                  controller: stockController,
-                                  keyboardType: TextInputType.number,
-                                  enabled: productType == ProductType.simple,
-                                  decoration: const InputDecoration(
-                                    labelText: "Stock",
-                                    border: OutlineInputBorder(),
+                                /// STOCK — highlighted in a colored container
+                                Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: Colors.blue.shade50,
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(color: Colors.blue.shade200),
                                   ),
-                                  validator: (v) {
-                                    if (productType == ProductType.simple) {
-                                      if (v == null || v.isEmpty)
-                                        return "Stock required";
-                                    }
-                                    return null;
-                                  },
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Icon(Icons.inventory_2_rounded,
+                                              color: Colors.blue.shade700, size: 18),
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            "Số lượng tồn kho *",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.blue.shade700,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 10),
+                                      TextFormField(
+                                        controller: stockController,
+                                        keyboardType: TextInputType.number,
+                                        enabled: productType == ProductType.simple,
+                                        decoration: InputDecoration(
+                                          labelText: "Số lượng (đơn vị / túi / tấm...)",
+                                          hintText: "VD: 100",
+                                          border: const OutlineInputBorder(),
+                                          filled: true,
+                                          fillColor: Colors.white,
+                                          suffixText: "đơn vị",
+                                        ),
+                                        validator: (v) {
+                                          if (productType == ProductType.simple) {
+                                            if (v == null || v.isEmpty)
+                                              return "Vui lòng nhập số lượng tồn kho";
+                                            final n = int.tryParse(v);
+                                            if (n == null || n < 0)
+                                              return "Số lượng phải là số nguyên >= 0";
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                    ],
+                                  ),
                                 ),
                                 const SizedBox(height: 15),
 
@@ -275,13 +312,18 @@ class _ProductFormPageState extends State<ProductFormPage> {
                                       ),
                                   enabled: productType == ProductType.simple,
                                   decoration: const InputDecoration(
-                                    labelText: "Price",
+                                    labelText: "Giá bán (VNĐ) *",
+                                    hintText: "VD: 85000",
                                     border: OutlineInputBorder(),
+                                    prefixIcon: Icon(Icons.attach_money),
+                                    suffixText: "đ",
                                   ),
                                   validator: (v) {
                                     if (productType == ProductType.simple) {
                                       if (v == null || v.isEmpty)
-                                        return "Price required";
+                                        return "Vui lòng nhập giá bán";
+                                      if (double.tryParse(v) == null)
+                                        return "Giá không hợp lệ";
                                     }
                                     return null;
                                   },
@@ -297,8 +339,11 @@ class _ProductFormPageState extends State<ProductFormPage> {
                                       ),
                                   enabled: productType == ProductType.simple,
                                   decoration: const InputDecoration(
-                                    labelText: "Discount Price",
+                                    labelText: "Giá khuyến mãi (VNĐ)",
+                                    hintText: "Để trống nếu không giảm giá",
                                     border: OutlineInputBorder(),
+                                    prefixIcon: Icon(Icons.local_offer),
+                                    suffixText: "đ",
                                   ),
                                   validator: (v) {
                                     if (v != null && v.isNotEmpty) {
@@ -309,7 +354,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
                                       if (sale != null &&
                                           price != null &&
                                           sale > price) {
-                                        return "Discount must be <= Price";
+                                        return "Giá KM phải nhỏ hơn hoặc bằng giá bán";
                                       }
                                     }
                                     return null;
@@ -327,7 +372,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const Text(
-                                  "Additional Images",
+                                  "Hình ảnh bổ sung",
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
@@ -361,7 +406,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
                                                     .text
                                                     .isEmpty
                                                 ? const Center(
-                                                    child: Text("No Image"),
+                                                    child: Text("Chưa có ảnh"),
                                                   )
                                                 : Image.network(
                                                     imageControllers[index]
@@ -371,7 +416,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
                                                         (_, __, ___) =>
                                                             const Center(
                                                               child: Text(
-                                                                "Invalid URL",
+                                                                "URL không hợp lệ",
                                                               ),
                                                             ),
                                                   ),
@@ -382,7 +427,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
                                           TextFormField(
                                             controller: imageControllers[index],
                                             decoration: InputDecoration(
-                                              hintText: "Paste image URL",
+                                              hintText: "Dán URL hình ảnh",
                                               border:
                                                   const OutlineInputBorder(),
                                               suffixIcon: IconButton(
@@ -413,7 +458,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const Text(
-                                  "Product Attributes",
+                                  "Thuộc tính sản phẩm",
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
@@ -425,7 +470,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
                                 DropdownButtonFormField<AttributeModel>(
                                   value: currentAttribute,
                                   decoration: const InputDecoration(
-                                    labelText: "Select Attribute",
+                                    labelText: "Chọn thuộc tính",
                                     border: OutlineInputBorder(),
                                   ),
                                   items: controller.attributes
@@ -489,7 +534,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
                                             .toList(),
                                       ),
                                       const SizedBox(height: 15),
-                                      ElevatedButton(
+                                      ElevatedButton.icon(
                                         onPressed: () {
                                           if (currentAttribute == null ||
                                               tempSelectedValues.isEmpty)
@@ -509,7 +554,8 @@ class _ProductFormPageState extends State<ProductFormPage> {
                                             tempSelectedValues.clear();
                                           });
                                         },
-                                        child: const Text("Add Attribute"),
+                                        icon: const Icon(Icons.add),
+                                        label: const Text("Thêm thuộc tính"),
                                       ),
                                     ],
                                   ),
@@ -560,7 +606,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const Text(
-                                  "Status",
+                                  "Trạng thái hiển thị",
                                   style: TextStyle(fontWeight: FontWeight.bold),
                                 ),
                                 RadioListTile<bool>(
@@ -568,22 +614,24 @@ class _ProductFormPageState extends State<ProductFormPage> {
                                   groupValue: isDraft,
                                   onChanged: (v) =>
                                       setState(() => isDraft = v!),
-                                  title: const Text("Publish"),
+                                  title: const Text("Công khai"),
                                 ),
                                 RadioListTile<bool>(
                                   value: true,
                                   groupValue: isDraft,
                                   onChanged: (v) =>
                                       setState(() => isDraft = v!),
-                                  title: const Text("Draft"),
+                                  title: const Text("Lưu nháp"),
                                 ),
                                 const Divider(),
                                 const SizedBox(height: 10),
                                 TextFormField(
                                   controller: thumbnailController,
                                   decoration: const InputDecoration(
-                                    labelText: "Thumbnail URL",
+                                    labelText: "URL Ảnh đại diện",
+                                    hintText: "Dán URL ảnh thumbnail",
                                     border: OutlineInputBorder(),
+                                    prefixIcon: Icon(Icons.image_outlined),
                                   ),
                                   onChanged: (_) => setState(() {}),
                                 ),
@@ -627,11 +675,12 @@ class _ProductFormPageState extends State<ProductFormPage> {
                               onChanged: (v) =>
                                   setState(() => selectedBrandId = v),
                               decoration: const InputDecoration(
-                                labelText: "Brand",
+                                labelText: "Thương hiệu",
                                 border: OutlineInputBorder(),
+                                prefixIcon: Icon(Icons.business),
                               ),
                               validator: (v) =>
-                                  v == null ? "Select brand" : null,
+                                  v == null ? "Vui lòng chọn thương hiệu" : null,
                             ),
                           ),
                         ),
@@ -645,7 +694,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const Text(
-                                  "Categories",
+                                  "Danh mục sản phẩm",
                                   style: TextStyle(fontWeight: FontWeight.bold),
                                 ),
                                 const SizedBox(height: 10),
@@ -678,7 +727,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const Text(
-                                  "Product Tags",
+                                  "Thẻ tag sản phẩm",
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
@@ -688,9 +737,10 @@ class _ProductFormPageState extends State<ProductFormPage> {
                                 TextFormField(
                                   controller: tagController,
                                   decoration: const InputDecoration(
-                                    labelText: "Enter tags (a,b,c,...)",
+                                    labelText: "Nhập các tag (phân cách bằng dấu phẩy)",
                                     border: OutlineInputBorder(),
-                                    hintText: "summer, tshirt, new",
+                                    hintText: "xi-mang, gach-op-lat, hang-moi",
+                                    prefixIcon: Icon(Icons.label_outline),
                                   ),
                                   onChanged: (_) => setState(() {}),
                                 ),
@@ -721,6 +771,10 @@ class _ProductFormPageState extends State<ProductFormPage> {
                             ),
                             onPressed: () async {
                               if (!_formKey.currentState!.validate()) return;
+                              // Ensure stock defaults to 1 when not set, never saves 0 accidentally
+                              if (stockController.text.trim().isEmpty) {
+                                stockController.text = '0';
+                              }
                               final product = ProductModel(
                                 id: widget.product?.id ?? "",
                                 title: titleController.text,
@@ -779,16 +833,20 @@ class _ProductFormPageState extends State<ProductFormPage> {
                               );
                               if (mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text("Product Saved Successfully"),
+                                  SnackBar(
+                                    content: Text(widget.product != null
+                                        ? 'Đã cập nhật sản phẩm thành công'
+                                        : 'Đã thêm sản phẩm thành công'),
+                                    backgroundColor: Colors.green,
+                                    behavior: SnackBarBehavior.floating,
                                   ),
                                 );
                                 Navigator.pop(context);
                               }
                             },
-                            child: const Text(
-                              "SAVE PRODUCT",
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                            child: Text(
+                              widget.product != null ? 'CẬP NHẬT SẢN PHẨM' : 'LƯU SẢN PHẨM',
+                              style: const TextStyle(fontWeight: FontWeight.bold),
                             ),
                           ),
                         ),

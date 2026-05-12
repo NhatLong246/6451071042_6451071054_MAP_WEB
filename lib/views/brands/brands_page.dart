@@ -37,15 +37,15 @@ class _BrandsView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Brand Management",
+                    "Quản Lý Thương Hiệu",
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF1E293B),
                     ),
                   ),
-                  Text(
-                    "Manage your product partners and labels",
+                  const Text(
+                    "Quản lý nhà cung cấp và thương hiệu vật liệu",
                     style: TextStyle(color: Colors.grey),
                   ),
                 ],
@@ -56,7 +56,7 @@ class _BrandsView extends StatelessWidget {
                   Icons.add_business_rounded,
                   color: Colors.white,
                 ),
-                label: const Text("ADD NEW BRAND"),
+                label: const Text("THÊM THƯƠNG HIỆU"),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.indigoAccent,
                   foregroundColor: Colors.white,
@@ -89,7 +89,7 @@ class _BrandsView extends StatelessWidget {
             ),
             child: TextField(
               decoration: const InputDecoration(
-                hintText: "Search brands...",
+                hintText: "Tìm kiếm thương hiệu...",
                 prefixIcon: Icon(Icons.search_rounded, color: Colors.indigo),
                 border: InputBorder.none,
                 contentPadding: EdgeInsets.symmetric(vertical: 15),

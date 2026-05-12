@@ -36,6 +36,7 @@ class ProductController extends ChangeNotifier {
 
   List<ProductModel> allProducts = [];
   List<ProductModel> filteredProducts = [];
+  bool isLoading = true;
   int currentPage = 0;
   int rowsPerPage = 10;
 
@@ -54,6 +55,7 @@ class ProductController extends ChangeNotifier {
     _subscription = productService.getAll().listen((data) {
       allProducts = data.where((e) => !e.isDeleted).toList();
       filteredProducts = allProducts;
+      isLoading = false;
       notifyListeners();
     });
   }

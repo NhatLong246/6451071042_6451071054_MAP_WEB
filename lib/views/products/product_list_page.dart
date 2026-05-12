@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../controllers/product_controller.dart';
+import '../../data/models/product_model.dart';
 import '../../data/services/product_service.dart';
 import 'product_form_page.dart';
 
@@ -33,7 +34,7 @@ class _ProductListView extends StatelessWidget {
         children: [
           // --- HEADER ---
           const Text(
-            "Product Inventory",
+            "Kho Vật Liệu Xây Dựng",
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
@@ -58,7 +59,7 @@ class _ProductListView extends StatelessWidget {
                   ),
                   child: TextField(
                     decoration: const InputDecoration(
-                      hintText: "Search products...",
+                      hintText: "Tìm kiếm sản phẩm...",
                       prefixIcon: Icon(Icons.search, color: Colors.blueAccent),
                       border: InputBorder.none,
                     ),
@@ -73,7 +74,7 @@ class _ProductListView extends StatelessWidget {
                   MaterialPageRoute(builder: (_) => const ProductFormPage()),
                 ),
                 icon: const Icon(Icons.add, color: Colors.white),
-                label: const Text("ADD PRODUCT"),
+                label: const Text("THÊM SẢN PHẨM"),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blueAccent,
                   foregroundColor: Colors.white,
@@ -99,8 +100,10 @@ class _ProductListView extends StatelessWidget {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
-                child: controller.filteredProducts.isEmpty
-                    ? const Center(child: Text("No products found"))
+                child: controller.isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : controller.filteredProducts.isEmpty
+                    ? const Center(child: Text("Không có sản phẩm nào"))
                     : Scrollbar(
                         thumbVisibility: true, // Luôn hiện thanh cuộn ngang
                         thickness: 8,
@@ -119,17 +122,17 @@ class _ProductListView extends StatelessWidget {
                                 columnSpacing:
                                     20, // Thu hẹp khoảng cách giữa các cột
                                 columns: const [
-                                  DataColumn(label: Text("SEQ")),
-                                  DataColumn(label: Text("PRODUCT")),
-                                  DataColumn(label: Text("PRICE")),
-                                  DataColumn(label: Text("TYPE")),
-                                  DataColumn(label: Text("STOCK")),
+                                  DataColumn(label: Text("STT")),
+                                  DataColumn(label: Text("SẢN PHẨM")),
+                                  DataColumn(label: Text("GIÁ")),
+                                  DataColumn(label: Text("LOẠI")),
+                                  DataColumn(label: Text("TỒN KHO")),
                                   DataColumn(
                                     label: Text("CÒN HÀNG"),
-                                  ), // 👈 THÊM
-                                  DataColumn(label: Text("VISIBLE")),
-                                  DataColumn(label: Text("STATUS")),
-                                  DataColumn(label: Text("ACTION")),
+                                  ),
+                                  DataColumn(label: Text("HIỂN THỊ")),
+                                  DataColumn(label: Text("TRẠNG THÁI")),
+                                  DataColumn(label: Text("THÁO TÁC")),
                                 ],
                                 rows: List.generate(
                                   controller.paginatedData.length,
@@ -171,28 +174,30 @@ class _ProductListView extends StatelessWidget {
                                         ),
                                         DataCell(
                                           Text(
-                                            "\$${item.price}",
+                                            _formatPrice(item.price),
                                             style: const TextStyle(
                                               fontWeight: FontWeight.bold,
                                               color: Colors.green,
                                             ),
                                           ),
                                         ),
-                                        DataCell(Text(item.productType.name)),
+                                        DataCell(Text(item.productType == ProductType.simple ? 'Đơn' : 'Biến thể')),
                                         DataCell(_buildStockBadge(item.stock)),
                                         DataCell(
-                                          Icon(
-                                            (item.stock - item.soldQuantity) > 0
-                                                ? Icons.check_circle
-                                                : Icons.cancel,
-                                            color:
-                                                (item.stock -
-                                                        item.soldQuantity) >
-                                                    0
-                                                ? Colors.green
-                                                : Colors.red,
-                                            size: 20,
-                                          ),
+                                          // "còn hàng": stock > 0 và chưa bị đánh dấu isOutOfStock
+                                          Builder(builder: (_) {
+                                            final inStock = item.stock > 0 &&
+                                                (item.isOutOfStock != true);
+                                            return Icon(
+                                              inStock
+                                                  ? Icons.check_circle
+                                                  : Icons.cancel,
+                                              color: inStock
+                                                  ? Colors.green
+                                                  : Colors.red,
+                                              size: 20,
+                                            );
+                                          }),
                                         ),
                                         DataCell(
                                           _buildVisibilityBadge(item.isDraft),
@@ -289,10 +294,11 @@ class _ProductListView extends StatelessWidget {
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
-        "$stock In Stock",
+        stock > 0 ? "$stock" : "Hết",
         style: TextStyle(
           color: stock > 0 ? Colors.green : Colors.red,
           fontSize: 12,
+          fontWeight: FontWeight.bold,
         ),
       ),
     );
@@ -308,7 +314,7 @@ class _ProductListView extends StatelessWidget {
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
-        isDraft ? "Draft" : "Published",
+        isDraft ? 'Nháp' : 'Công khai',
         style: TextStyle(
           color: isDraft ? Colors.orange : Colors.blue,
           fontSize: 12,
@@ -316,18 +322,35 @@ class _ProductListView extends StatelessWidget {
       ),
     );
   }
+
+  String _formatPrice(double price) {
+    final parts = price.toInt().toString().split('');
+    final buffer = StringBuffer();
+    for (int i = 0; i < parts.length; i++) {
+      if (i > 0 && (parts.length - i) % 3 == 0) buffer.write('.');
+      buffer.write(parts[i]);
+    }
+    return '${buffer.toString()}đ';
+  }
 }
 
 Future<void> _showDeleteDialog(BuildContext context, VoidCallback onConfirm) {
   return showDialog(
     context: context,
     builder: (_) => AlertDialog(
-      title: const Text("Confirm Delete"),
-      content: const Text("Are you sure?"),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      title: const Row(
+        children: [
+          Icon(Icons.warning_amber_rounded, color: Colors.red),
+          SizedBox(width: 8),
+          Text('Xác nhận xóa'),
+        ],
+      ),
+      content: const Text('Sản phẩm này sẽ bị xóa vĩnh viễn. Bạn có chắc chắn không?'),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text("Cancel"),
+          child: const Text('HỦY'),
         ),
         ElevatedButton(
           style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
@@ -335,7 +358,7 @@ Future<void> _showDeleteDialog(BuildContext context, VoidCallback onConfirm) {
             onConfirm();
             Navigator.pop(context);
           },
-          child: const Text("Delete", style: TextStyle(color: Colors.white)),
+          child: const Text('XÓA', style: TextStyle(color: Colors.white)),
         ),
       ],
     ),

@@ -35,7 +35,7 @@ class _CategoriesView extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                'Product Categories',
+                'Danh Mục Vật Liệu',
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
@@ -45,7 +45,7 @@ class _CategoriesView extends StatelessWidget {
               ElevatedButton.icon(
                 onPressed: () => _showDialog(context),
                 icon: const Icon(Icons.add, size: 18),
-                label: const Text('ADD CATEGORY'),
+                label: const Text('THÊM DANH MỤC'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.indigoAccent,
                   foregroundColor: Colors.white,
@@ -77,7 +77,7 @@ class _CategoriesView extends StatelessWidget {
             child: TextField(
               onChanged: controller.search,
               decoration: const InputDecoration(
-                hintText: 'Search categories by name...',
+                hintText: 'Tìm kiếm danh mục...',
                 prefixIcon: Icon(Icons.search, color: Colors.grey),
                 border: InputBorder.none,
               ),

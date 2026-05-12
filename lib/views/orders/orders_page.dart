@@ -77,7 +77,7 @@ class _OrderPageState extends State<OrderPage> {
                 children: [
                   /// HEADER
                   const Text(
-                    "Order Management",
+                    "Quản Lý Đơn Hàng",
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,

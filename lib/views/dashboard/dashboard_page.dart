@@ -103,7 +103,7 @@ class _MyDashboardState extends State<MyDashboard> {
                 ),
                 const SizedBox(width: 15),
                 const Text(
-                  "Hệ Thống Quản Lý",
+                  "Hệ Thống Quản Lý Vật Liệu Xây Dựng",
                   style: TextStyle(
                     fontSize: 26,
                     fontWeight: FontWeight.w800,
